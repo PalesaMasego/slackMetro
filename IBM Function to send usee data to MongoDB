@@ -1,0 +1,37 @@
+/**
+  *
+  * main() will be run when you invoke this action
+  *
+  * @param Cloud Functions actions accept a single parameter, which must be a JSON object.
+  *
+  * @return The output of this action, which must be a JSON object.
+  *
+  */
+const mongodb = require('mongodb');
+
+const uri = 'mongodb+srv://(removed full connection string)';
+
+let client = null;
+var db;
+async function main(params) {
+  const reused = client != null;
+  if (client == null) {
+    client = await mongodb.MongoClient.connect(uri);  
+  }
+  
+  const obj = [{
+        name: params.name,
+        surname: params.surname,
+        idNumber: params.idNum,
+        phoneNumber: params.phoneNumber,
+        hobby: params.hobby,
+        completed: false,}]
+       
+
+ const docs = await client.db('CustSchema').collection('users').insert(obj);
+ //const docs = await client.db('CustSchema').collection('users').find().toArray();
+return { body: { result: docs, reused } };
+}
+
+exports.main = main;
+
